@@ -4,6 +4,130 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("loginForm");
     const signupForm = document.getElementById("signupForm");
     const linkBtns = document.querySelectorAll(".link-btn");
+    const name = document.getElementById("signup_name");
+    const email = document.getElementById("signup_email");
+    const password = document.getElementById("signup_password");
+    const confirm = document.getElementById("signup_confirm");
+    const terms = document.querySelector("input[name='terms']");
+    const overlay = document.querySelector(".form-overlay");
+    const login_username = document.getElementById("login_username");
+    const login_password = document.getElementById("login_password");
+
+
+
+    async function auth({type, username_input, password_input, email_input=null} = {}){
+        try{
+            let res;
+            if(type == "signup"){
+                res = await fetch("/authentication/",{
+                    method: "POST",
+                    headers:{ "Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        type:type,
+                        username:username_input,
+                        email:email_input,
+                        password:password_input
+                    })
+                });
+                
+                const data = await res.json();
+
+                if(res.status === 400){
+                    const usernameErrors = data.errors.username;
+                    const emailErrors = data.errors.email;
+                    const passwordErrors = data.errors.password;
+                    const generalErrors = data.errors.__all__;
+                    if(usernameErrors){showError(name, usernameErrors[0])}
+                    else if(emailErrors){showError(email, emailErrors[0])}
+                    else if(passwordErrors){showError(password, passwordErrors[0])}
+                    else if(generalErrors){showError(name, generalErrors[0])}
+                }
+
+                else if(res.status === 500 || res.status === 405){
+                    alert("Something went wrong, please try again later or contact us");
+                    console.error("Failed to authenticate user", data.error);
+                }
+
+                else if(res.ok){
+                     // Show loading
+                    overlay.classList.remove("hidden");
+                    overlay.classList.add("active");
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        overlay.classList.remove("active");
+                        overlay.classList.add("hidden");
+                        
+                        // Show success
+                        const successOverlay = document.getElementById("successOverlay");
+                        document.getElementById("successTitle").textContent = "Account Created";
+                        document.getElementById("successMessage").textContent = "Welcome to Echo. Let's begin.";
+                        successOverlay.classList.add("active");
+                        
+                        // Redirect after delay
+                        setTimeout(() => {
+                            window.location.href = "/home/";
+                        }, 2000);
+                    }, 2000);
+                    
+                }
+            }
+
+            else if(type == 'login'){
+                res = await fetch("/authentication/",{
+                    method: "POST",
+                    headers:{ "Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        type:type,
+                        username:username_input,
+                        password:password_input
+                    })
+                });
+
+                const data = await res.json();
+
+                if(res.status === 401){
+                    showError(login_username, data.error);
+                    showError(login_password, data.error);
+                }
+
+                else if(res.status === 500 || res.status === 405){
+                    alert("Something went wrong, please try again later or contact us");
+                    console.error("Failed to authenticate user", data.error);
+                }
+
+                else if(res.ok){
+                    // Show loading
+                    overlay.classList.remove("hidden");
+                    overlay.classList.add("active");
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        overlay.classList.remove("active");
+                        overlay.classList.add("hidden");
+                        
+                        // Show success
+                        const successOverlay = document.getElementById("successOverlay");
+                        document.getElementById("successTitle").textContent = "Welcome Back";
+                        document.getElementById("successMessage").textContent = "Redirecting to your future self...";
+                        successOverlay.classList.add("active");
+                        
+                        // Redirect after delay
+                        setTimeout(() => {
+                            window.location.href = "/chat/";
+                        }, 2000);
+                    }, 2000);
+                    
+                }
+            }
+            
+        }
+
+        catch(error){
+            alert("Something went wrong, please try again later or contact us");
+            console.error("Failed to authenticate user", error);
+        }
+    }
 
     function switchTab(tabName) {
         // Update tab buttons
@@ -91,64 +215,35 @@ document.addEventListener("DOMContentLoaded", () => {
     loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
         
-        const email = document.getElementById("login_email");
-        const password = document.getElementById("login_password");
-        const overlay = document.querySelector(".form-overlay");
-        
         // Basic validation
         let isValid = true;
         
-        if (!email.value || !email.value.includes("@")) {
-            showError(email, "Please enter a valid email address");
+        if (!login_username.value) {
+            showError(login_username, "Please enter a valid email address");
             isValid = false;
         }
         
-        if (!password.value || password.value.length < 8) {
-            showError(password, "Password must be at least 8 characters");
+        if (!login_password.value || login_password.value.length < 8) {
+            showError(login_password, "Password must be at least 8 characters");
             isValid = false;
         }
         
         if (!isValid) return;
+
+        auth({type: "login", username_input: login_username.value, password_input: login_password.value});
         
-        // Show loading
-        overlay.classList.remove("hidden");
-        overlay.classList.add("active");
         
-        // Simulate API call
-        setTimeout(() => {
-            overlay.classList.remove("active");
-            overlay.classList.add("hidden");
-            
-            // Show success
-            const successOverlay = document.getElementById("successOverlay");
-            document.getElementById("successTitle").textContent = "Welcome Back";
-            document.getElementById("successMessage").textContent = "Redirecting to your future self...";
-            successOverlay.classList.add("active");
-            
-            // Redirect after delay
-            setTimeout(() => {
-                // window.location.href = "/home/";
-                console.log("Redirect to home");
-            }, 2000);
-        }, 2000);
     });
 
     // --- Sign Up Form Submission ---
     signupForm.addEventListener("submit", (e) => {
         e.preventDefault();
         
-        const name = document.getElementById("signup_name");
-        const email = document.getElementById("signup_email");
-        const password = document.getElementById("signup_password");
-        const confirm = document.getElementById("signup_confirm");
-        const terms = document.querySelector("input[name='terms']");
-        const overlay = document.querySelector(".form-overlay");
-        
         // Basic validation
         let isValid = true;
         
-        if (!name.value || name.value.length < 2) {
-            showError(name, "Please enter your full name");
+        if (!name.value) {
+            showError(name, "Please enter your username");
             isValid = false;
         }
         
@@ -174,26 +269,8 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (!isValid) return;
         
-        // Show loading
-        overlay.classList.remove("hidden");
-        overlay.classList.add("active");
+        auth({type: "signup", email_input: email.value, password_input: password.value, username_input: name.value});
         
-        // Simulate API call
-        setTimeout(() => {
-            overlay.classList.remove("active");
-            overlay.classList.add("hidden");
-            
-            // Show success
-            const successOverlay = document.getElementById("successOverlay");
-            document.getElementById("successTitle").textContent = "Account Created";
-            document.getElementById("successMessage").textContent = "Welcome to Echo. Let's begin.";
-            successOverlay.classList.add("active");
-            
-            // Redirect after delay
-            setTimeout(() => {
-                // window.location.href = "/home/";
-                console.log("Redirect to home");
-            }, 2000);
-        }, 2000);
+
     });
 });
