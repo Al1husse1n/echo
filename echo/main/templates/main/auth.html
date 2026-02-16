@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo | Access</title>
+    
+    <!-- Fonts: Space Grotesk for headers, Inter for UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'main/auth.css' %}">
+</head>
+<body>
+
+    <!-- Ambient Background (Same as home) -->
+    <div class="ambient-light"></div>
+    <div class="noise-overlay"></div>
+
+    <main class="container">
+        
+        <!-- Header -->
+        <header class="hero">
+            <div class="logo-mark">ECHO</div>
+            <h1><span class="highlight">Continue</span> your journey.</h1>
+            <p class="subtitle">Access your future self continuity.</p>
+        </header>
+
+        <!-- Auth Card -->
+        <div class="glass-card auth-card">
+            
+            <!-- Toggle Tabs -->
+            <div class="auth-tabs">
+                <button type="button" class="tab-btn active" data-tab="login">Sign In</button>
+                <button type="button" class="tab-btn" data-tab="signup">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="login_email">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="login_email" name="email" placeholder="you@example.com" required>
+                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="login_password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="login_password" name="password" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                    <div class="form-actions">
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    <span>Sign In</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+
+                <p class="form-footer">
+                    Don't have an account? <button type="button" class="link-btn" data-tab="signup">Create one</button>
+                </p>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="signup_name">Full Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="signup_name" name="name" placeholder="Alex Chen" required>
+                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup_email">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="signup_email" name="email" placeholder="you@example.com" required>
+                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup_password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="signup_password" name="password" placeholder="••••••••" minlength="8" required>
+                        <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                    <small class="hint">Minimum 8 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup_confirm">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="signup_confirm" name="confirm_password" placeholder="••••••••" minlength="8" required>
+                        <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="terms" required>
+                        <span>I agree to the <a href="#" class="link-text">Terms of Service</a> and <a href="#" class="link-text">Privacy Policy</a></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    <span>Create Account</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+
+                <p class="form-footer">
+                    Already have an account? <button type="button" class="link-btn" data-tab="login">Sign in</button>
+                </p>
+            </form>
+
+            <!-- Loading Overlay -->
+            <div class="form-overlay hidden">
+                <div class="loading-spinner"></div>
+                <p>Establishing connection...</p>
+            </div>
+
+        </div>
+
+        <p class="footer-text">
+            <span class="lock-icon">🔒</span> End-to-end encrypted. Your data is yours.
+        </p>
+
+    </main>
+
+    <!-- Success Overlay -->
+    <div id="successOverlay" class="overlay hidden">
+        <div class="overlay-content">
+            <div class="success-icon">✓</div>
+            <h2 id="successTitle">Welcome Back</h2>
+            <p id="successMessage">Redirecting to your future self...</p>
+        </div>
+    </div>
+
+    <script defer src="{% static 'main/auth.js' %}"></script>
+</body>
+</html>
