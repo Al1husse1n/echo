@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo | Future Self</title>
+    
+    <!-- Fonts: Space Grotesk for headers, Inter for UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'main/home.css' %}">
+</head>
+<body>
+
+    <!-- Ambient Background -->
+    <div class="ambient-light"></div>
+    <div class="noise-overlay"></div>
+
+    <main class="container">
+        
+        <!-- Header -->
+        <header class="hero">
+            <div class="logo-mark">ECHO</div>
+            <h1>Speak to who you are <br><span class="highlight">becoming.</span></h1>
+            <p class="subtitle">Good reminders come from remembered values, not remembered dates.</p>
+        </header>
+
+        <!-- The Form -->
+        <form class="glass-card" id="futureProfileForm">
+
+            <!-- Section 1: The Timeline -->
+            <div class="form-section">
+                <div class="input-row">
+                    <div class="form-group full-width">
+                        <label for="target_year">1. The Timeline</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="target_year" name="target_year" placeholder="2035" min="2026" max="2100" required>
+                            <span class="suffix">AD</span>
+                        </div>
+                        <small class="hint">Which year do you want to speak to?</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Identity -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="identity_description">2. Future Identity</label>
+                    <textarea name="identity_description" id="identity_description"
+                        placeholder="How you think, live, work, and carry yourself."
+                        rows="3" required></textarea>
+                    <small class="hint">In one paragraph, describe the person you want to be by that year.</small>
+                </div>
+            </div>
+
+            <!-- Section 3: Values (Interactive Tags) -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label>3. Core Values <span class="counter" id="valueCount">(0/5)</span></label>
+                    <div class="values-grid" id="valuesContainer">
+                        <!-- Aligned exactly with Schema -->
+                        <label class="tag-select"><input type="checkbox" name="core_values" value="Consistency"> <span>Consistency</span></label>
+                        <label class="tag-select"><input type="checkbox" name="core_values" value="Curiosity"> <span>Curiosity</span></label>
+                        <label class="tag-select"><input type="checkbox" name="core_values" value="Discipline"> <span>Discipline</span></label>
+                        <label class="tag-select"><input type="checkbox" name="core_values" value="Integrity"> <span>Integrity</span></label>
+                        <label class="tag-select"><input type="checkbox" name="core_values" value="Freedom"> <span>Freedom</span></label>
+                        <label class="tag-select"><input type="checkbox" name="core_values" value="Learning"> <span>Learning</span></label>
+                        <label class="tag-select"><input type="checkbox" name="core_values" value="Courage"> <span>Courage</span></label>
+                    </div>
+                    <small class="hint">Select the pillars that will hold you up when you are tired.</small>
+                </div>
+            </div>
+
+            <!-- Section 4: Goals & Regrets -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="long_term_goals">4. Success Criteria</label>
+                    <textarea name="long_term_goals" id="long_term_goals"
+                        placeholder="What must be true about your life by then for you to feel proud?"
+                        rows="2" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="anticipated_regrets">5. Anticipated Regrets</label>
+                    <textarea name="anticipated_regrets" id="anticipated_regrets"
+                        placeholder="Looking back from that year, what would you regret not starting earlier?"
+                        rows="2" required></textarea>
+                </div>
+            </div>
+
+            <!-- Section 5: Growth Areas (New Field) -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="current_limitations">6. Growth Areas</label>
+                    <textarea name="current_limitations" id="current_limitations"
+                        placeholder="What patterns or habits do you hope your future self no longer has?"
+                        rows="2" required></textarea>
+                    <small class="hint">This allows your future self to say: "This used to stop us. Remember?"</small>
+                </div>
+            </div>
+
+            <!-- Section 6: Tone & Commitment -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="preferred_tone">7. Voice & Tone</label>
+                    <div class="select-wrapper">
+                        <select name="preferred_tone" id="preferred_tone" required>
+                            <option value="" disabled selected>Select a voice...</option>
+                            <!-- Aligned exactly with Schema -->
+                            <option value="gentle">Gentle & Reassuring</option>
+                            <option value="honest">Honest & Firm</option>
+                            <option value="minimal">Minimal & Reflective</option>
+                            <option value="motivational">Motivational but Calm</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="commitment_reason">8. The Contract</label>
+                    <textarea name="commitment_reason" id="commitment_reason"
+                        placeholder="Why does becoming this person matter to you?"
+                        rows="3" required></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="primary-btn">
+                <span>Initialize Echo</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+
+            <p class="footer-text">
+                <span class="lock-icon">🔒</span> Data is encrypted. This is character creation.
+            </p>
+
+        </form>
+    </main>
+
+    <!-- Success Overlay (Hidden by default) -->
+    <div id="successOverlay" class="overlay hidden">
+        <div class="overlay-content">
+            <div class="success-icon">✓</div>
+            <h2>Connection Established</h2>
+            <p>Your future self is listening.</p>
+        </div>
+    </div>
+
+    <script defer src="{% static 'main/home.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+:root {
+    /* Palette */
+    --bg-deep: #050505;
+    --bg-surface: rgba(20, 20, 25, 0.6);
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-focus: rgba(108, 242, 194, 0.5);
+    
+    --text-main: #ffffff;
+    --text-muted: #8b9bb4;
+    
+    --accent-glow: #6cf2c2;
+    --accent-secondary: #6c8bf2;
+    
+    /* Typography */
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    outline: none;
+}
+
+body {
+    margin: 0;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- Ambient Background --- */
+.ambient-light {
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, rgba(108, 139, 242, 0.15), transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(108, 242, 194, 0.08), transparent 40%);
+    animation: breathe 15s ease-in-out infinite alternate;
+    z-index: -2;
+    pointer-events: none;
+}
+
+.noise-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+@keyframes breathe {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.1); opacity: 1; }
+}
+
+/* --- Layout --- */
+.container {
+    width: 100%;
+    max-width: 680px;
+    padding: 4rem 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Hero --- */
+.hero {
+    text-align: center;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+}
+
+.logo-mark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 4px;
+    font-size: 0.8rem;
+    color: var(--accent-glow);
+    margin-bottom: 1rem;
+    display: inline-block;
+    border: 1px solid var(--border-light);
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+}
+
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    line-height: 1.1;
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+    letter-spacing: -0.03em;
+}
+
+/* --- FIX APPLIED HERE --- */
+.highlight {
+    background: linear-gradient(90deg, #fff, var(--text-muted));
+    -webkit-background-clip: text;
+    background-clip: text; /* Standard property added for compatibility */
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+/* --- Glass Card --- */
+.glass-card {
+    background: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    opacity: 0;
+    animation: slideUp 0.8s ease 0.2s forwards;
+    transform: translateY(20px);
+}
+
+/* --- Form Elements --- */
+.form-section {
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 2.5rem;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.input-wrapper, .select-wrapper {
+    position: relative;
+}
+
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1rem;
+    color: var(--text-main);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input[type="number"] {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding-right: 40px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+}
+
+/* Focus States */
+input:focus, textarea:focus, select:focus {
+    background: rgba(0,0,0,0.4);
+    border-color: var(--accent-glow);
+    box-shadow: 0 0 0 4px rgba(108, 242, 194, 0.1);
+}
+
+/* Number Input Suffix */
+.suffix {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+/* --- Interactive Tags (Values) --- */
+.values-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.tag-select {
+    cursor: pointer;
+    user-select: none;
+}
+
+.tag-select input {
+    display: none; /* Hide checkbox */
+}
+
+.tag-select span {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-light);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.tag-select:hover span {
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+}
+
+.tag-select input:checked + span {
+    background: rgba(108, 242, 194, 0.15);
+    border-color: var(--accent-glow);
+    color: var(--accent-glow);
+    box-shadow: 0 0 15px rgba(108, 242, 194, 0.1);
+}
+
+.counter {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    margin-left: 0.5rem;
+    font-weight: 400;
+    text-transform: none;
+}
+
+.hint {
+    display: block;
+    margin-top: 0.8rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* --- Button --- */
+.primary-btn {
+    width: 100%;
+    background: var(--text-main);
+    color: #000;
+    border: none;
+    padding: 1.2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-top: 1rem;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+    background: var(--accent-glow);
+}
+
+.primary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- Footer --- */
+.footer-text {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2rem;
+    opacity: 0.6;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Success Overlay --- */
+.overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 5, 5, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.overlay-content {
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.overlay.active .overlay-content {
+    transform: scale(1);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--accent-glow);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 40px var(--accent-glow);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 600px) {
+    .hero h1 { font-size: 2rem; }
+    .glass-card { padding: 1.5rem; }
+    .values-grid { gap: 0.5rem; }
+    .tag-select span { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+}
