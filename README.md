@@ -86,10 +86,10 @@ ContactAli Hussein
  @binguap0
 
 GitHub: github.com/Al1husse1n
-LinkedIn: www.linkedin.com/in/ali-hussein-167039309/<div align="center">
-<i>“The best reminders aren’t found in calendars.
-They’re found in the values you wrote down when you still believed.”</i>
-</div>
+LinkedIn: www.linkedin.com/in/ali-hussein-167039309/
+
+                                                    “The best reminders aren’t found in calendars.
+                                        They’re found in the values you wrote down when you still believed.”
 ```
 
 
