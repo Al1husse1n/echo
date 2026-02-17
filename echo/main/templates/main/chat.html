@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo | Identity & Execution</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'main/chat.css' %}">
+</head>
+<body>
+
+    <!-- Ambient Background -->
+    <div class="ambient-light"></div>
+    <div class="noise-overlay"></div>
+
+    <main class="app-container">
+        
+        <!-- LEFT SIDEBAR: Goal Management -->
+        <aside class="sidebar-left" id="sidebarLeft">
+            <div class="sidebar-header">
+                <div class="logo-mark">ECHO</div>
+                <button class="icon-btn new-goal-btn" id="newGoalBtn" title="New Goal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+            </div>
+
+            <div class="goals-list" id="goalsList">
+                <!-- Active Goal -->
+                <div class="goal-item active">
+                    <div class="goal-info">
+                        <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        <span class="goal-title">Learn Django</span>
+                    </div>
+                    <div class="goal-actions">
+                        <button class="action-btn rename-btn" title="Rename">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                        <button class="action-btn delete-btn" title="Delete">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Other Goals -->
+                <div class="goal-item">
+                    <div class="goal-info">
+                        <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        <span class="goal-title">Learn Spanish</span>
+                    </div>
+                    <div class="goal-actions">
+                        <button class="action-btn rename-btn" title="Rename">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                        <button class="action-btn delete-btn" title="Delete">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="goal-item">
+                    <div class="goal-info">
+                        <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <span class="goal-title">Build Fitness Habit</span>
+                    </div>
+                    <div class="goal-actions">
+                        <button class="action-btn rename-btn" title="Rename">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                        <button class="action-btn delete-btn" title="Delete">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">AC</div>
+                    <div class="user-info">
+                        <span class="user-name">Alex Chen</span>
+                        <span class="user-target">Target: 2035</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER: Chat Area (System 1 - Future Self) -->
+        <section class="chat-section">
+            
+            <!-- Header with Mobile Toggles -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <!-- Mobile Left Sidebar Toggle -->
+                    <button class="mobile-toggle" id="toggleLeftSidebar" title="Toggle Goals">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    
+                    <div class="identity-badge">
+                        <span class="status-dot"></span>
+                        <span id="headerIdentity">You, 2035</span>
+                    </div>
+                    <span class="goal-context">Working on: Learn Django</span>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn" id="reflectionsBtn" title="View Past Reflections">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span class="badge-count">3</span>
+                    </button>
+                    
+                    <!-- Mobile Right Sidebar Toggle -->
+                    <button class="mobile-toggle" id="toggleRightSidebar" title="Toggle Roadmap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Window -->
+            <div class="chat-window" id="chatWindow">
+                
+                <!-- Welcome Message (System 1: Future Self) -->
+                <div class="message system-message">
+                    <div class="message-content">
+                        <p>Connection established. I am you, 11 years from now. I remember what you promised. What's on your mind today?</p>
+                    </div>
+                </div>
+
+                <!-- Example User Message -->
+                <div class="message user-message">
+                    <div class="message-content">
+                        <p>I want to learn Django. But I always quit.</p>
+                    </div>
+                </div>
+
+                <!-- Example Future Self Message (System 1) -->
+                <div class="message ai-message">
+                    <div class="message-content">
+                        <p>I remember that feeling. Quitting was the pattern we promised to break. Do you want me to map out the path so you can see the end?</p>
+                    </div>
+                </div>
+
+                <!-- Example Milestone Reached (System 1 reacting to System 2) -->
+                <div class="message milestone-message">
+                    <div class="message-content">
+                        <div class="milestone-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <div class="milestone-text">
+                            <h4>Phase Completed</h4>
+                            <p>You finished "Django Basics". This is the consistency you said mattered. Silence has a cost, but so does stopping.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area">
+                <form id="chatForm" class="input-wrapper">
+                    <textarea id="messageInput" name="message" placeholder="Speak to your future self..." rows="1"></textarea>
+                    <button type="submit" class="send-btn" id="sendBtn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </form>
+                <small class="input-hint">Identity First. Execution Second.</small>
+            </div>
+
+        </section>
+
+        <!-- RIGHT SIDEBAR: Roadmap/Phases (System 2 - Builder Agent) -->
+        <aside class="sidebar-right" id="sidebarRight">
+            <div class="sidebar-header">
+                <h3>Execution Path</h3>
+                <button class="icon-btn" id="generatePlanBtn" title="Generate New Plan">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Overall Progress</span>
+                        <span id="progressPercent">40%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%"></div>
+                    </div>
+                </div>
+
+                <!-- Phases List -->
+                <div class="phases-list" id="phasesList">
+                    <!-- Phase 1: Completed -->
+                    <div class="phase-card completed">
+                        <div class="phase-header">
+                            <span class="phase-status">✓</span>
+                            <h4>Python & Environments</h4>
+                        </div>
+                        <p>Setup virtual env, understand syntax basics.</p>
+                        <button class="phase-btn disabled" disabled>Completed</button>
+                    </div>
+
+                    <!-- Phase 2: Active -->
+                    <div class="phase-card active">
+                        <div class="phase-header">
+                            <span class="phase-status">●</span>
+                            <h4>Django Basics</h4>
+                        </div>
+                        <p>Models, Views, Templates. Build a hello world.</p>
+                        <button class="phase-btn complete-btn" data-phase-id="2">Mark Complete</button>
+                    </div>
+
+                    <!-- Phase 3: Locked -->
+                    <div class="phase-card locked">
+                        <div class="phase-header">
+                            <span class="phase-status">🔒</span>
+                            <h4>CRUD Project</h4>
+                        </div>
+                        <p>Build a full blog with database interactions.</p>
+                        <button class="phase-btn disabled" disabled>Locked</button>
+                    </div>
+
+                    <!-- Phase 4: Locked -->
+                    <div class="phase-card locked">
+                        <div class="phase-header">
+                            <span class="phase-status">🔒</span>
+                            <h4>Deployment</h4>
+                        </div>
+                        <p>Docker, AWS, CI/CD pipeline.</p>
+                        <button class="phase-btn disabled" disabled>Locked</button>
+                    </div>
+                </div>
+
+                <!-- Empty State (If no plan) -->
+                <div class="empty-state hidden" id="roadmapEmpty">
+                    <div class="empty-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </div>
+                    <p>No active roadmap for this goal.</p>
+                    <button class="primary-btn small" id="generatePlanBtnEmpty">Generate Plan</button>
+                </div>
+
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Mobile Sidebar Overlays -->
+    <div class="mobile-overlay hidden" id="mobileOverlayLeft"></div>
+    <div class="mobile-overlay hidden" id="mobileOverlayRight"></div>
+
+    <!-- Reflections Drawer Overlay -->
+    <div class="drawer-overlay hidden" id="reflectionsOverlay"></div>
+    <div class="drawer" id="reflectionsDrawer">
+        <div class="drawer-header">
+            <h3>Past Reflections</h3>
+            <button class="close-drawer" id="closeReflections">&times;</button>
+        </div>
+        <div class="drawer-content">
+            <div class="reflection-item">
+                <span class="date">2 days ago</span>
+                <p>You wanted me to be fluent by now. I didn't get here accidentally.</p>
+            </div>
+            <div class="reflection-item">
+                <span class="date">1 week ago</span>
+                <p>Consistency matters. Silence has a cost.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Goal Modal -->
+    <div class="modal-overlay hidden" id="newGoalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Create New Goal</h3>
+                <button class="close-modal" id="closeNewGoal">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label for="newGoalTitle">Goal Title</label>
+                    <input type="text" id="newGoalTitle" placeholder="e.g., Learn Django, Build Fitness Habit">
+                </div>
+                <div class="form-group">
+                    <label for="newGoalDescription">Why does this matter?</label>
+                    <textarea id="newGoalDescription" rows="3" placeholder="Connect this to your future identity..."></textarea>
+                </div>
+                <button class="primary-btn" id="createGoalBtn">Create Goal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Goal Modal -->
+    <div class="modal-overlay hidden" id="renameGoalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Rename Goal</h3>
+                <button class="close-modal" id="closeRenameGoal">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label for="renameGoalTitle">New Title</label>
+                    <input type="text" id="renameGoalTitle">
+                </div>
+                <button class="primary-btn" id="saveRenameBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay hidden" id="deleteGoalOverlay">
+        <div class="modal delete-modal">
+            <div class="modal-header">
+                <h3>Delete Goal?</h3>
+                <button class="close-modal" id="closeDeleteGoal">&times;</button>
+            </div>
+            <div class="modal-content">
+                <p>This will remove all progress and reflections for this goal. This action cannot be undone.</p>
+                <div class="modal-actions">
+                    <button class="secondary-btn" id="cancelDeleteBtn">Cancel</button>
+                    <button class="danger-btn" id="confirmDeleteBtn">Delete Goal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="{% static 'main/chat.js' %}"></script>
+</body>
+</html>
