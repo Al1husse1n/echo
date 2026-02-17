@@ -50,3 +50,42 @@ def authentication(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+@csrf_exempt
+def profile_form(request):
+    if request.method != 'POST':
+        return JsonResponse({"error":"only POST request is allowed"}, status=405)
+    
+    try:
+        current_user = request.user
+        data = json.loads(request.body)
+        target_year = data.get("target_year")
+        identity_description = data.get("identity_description")
+        core_values = data.get("core_values")
+        long_term_goals = data.get("long_term_goals")
+        anticipated_regrets = data.get("anticipated_regrets")
+        current_limitations = data.get("current_limitations")
+        preferred_tone = data.get("preferred_tone")
+        commitment_reason = data.get("commitment_reason")
+        
+        future_profile = FutureProfile(
+            user = current_user,
+            target_year= int(target_year),
+            identity_description= identity_description,
+            core_values= core_values,
+            long_term_goals= long_term_goals,
+            anticipated_regrets= anticipated_regrets,
+            current_limitations= current_limitations,
+            preferred_tone= preferred_tone,
+            commitment_reason= commitment_reason
+        )
+        future_profile.full_clean()
+        future_profile.save()
+        print(future_profile)
+        
+        return JsonResponse({"message": "Future profile successfully saved"}, status=200)
+    
+    except ValidationError as e:
+        return JsonResponse({"errors": e.message_dict}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
