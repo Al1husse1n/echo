@@ -337,7 +337,7 @@ input:focus, textarea:focus, select:focus {
     transform: scale(1);
 }
 
-.success-icon {
+.success-icon, .failure-icon {
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -350,6 +350,22 @@ input:focus, textarea:focus, select:focus {
     font-weight: bold;
     margin: 0 auto 1.5rem;
     box-shadow: 0 0 40px var(--accent-glow);
+}
+
+.failure-icon{
+    background: var(--danger-glow);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 40px var(--danger-glow);
+
 }
 
 /* Mobile Adjustments */
