@@ -44,6 +44,11 @@ Just a quiet, honest mirror — grounded in who you said you wanted to become.
 - **Database** — PostgreSQL (SQLite for local dev)  
 - **Deployment** — Docker · Gunicorn · Nginx
 
+##Screenshots
+![Profile form](screenshots/home)
+![Chat](screenshots/chat)
+![Authentication](screenshots/auth)
+
 ## Quick start (2 minutes)
 
 ```bash
@@ -81,10 +86,6 @@ Production reminders
 ☐ Static files (WhiteNoise / CDN)
 ☐ HTTPS
 
-##Screenshots
-![Profile form](screenshots/home)
-![Chat](screenshots/chat)
-![Authentication](screenshots/auth)
 
 ContactAli Hussein
  alihusseinali284@gmail.com
