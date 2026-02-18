@@ -1,4 +1,4 @@
-# Echo 🌌  
+f# Echo 🌌  
 Your future self — already waiting to talk to you.
 
 > “The contract between Present-You and Future-You.”
@@ -80,6 +80,11 @@ Production reminders
 ☐ Switch to PostgreSQL
 ☐ Static files (WhiteNoise / CDN)
 ☐ HTTPS
+
+##Screenshots
+![Profile form](screenshots/home)
+![Chat](screenshots/chat)
+![Authentication](screenshots/auth)
 
 ContactAli Hussein
  alihusseinali284@gmail.com
