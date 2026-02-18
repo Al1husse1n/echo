@@ -45,9 +45,9 @@ Just a quiet, honest mirror — grounded in who you said you wanted to become.
 - **Deployment** — Docker · Gunicorn · Nginx
 
 ##Screenshots
-![Profile form](screenshots/home)
-![Chat](screenshots/chat)
-![Authentication](screenshots/auth)
+![Profile form](screenshots/home.png)
+![Chat](screenshots/chat.png)
+![Authentication](screenshots/auth.png)
 
 ## Quick start (2 minutes)
 
