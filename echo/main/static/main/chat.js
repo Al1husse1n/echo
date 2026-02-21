@@ -32,6 +32,54 @@ document.addEventListener("DOMContentLoaded", () => {
     const completeBtns = document.querySelectorAll(".complete-btn");
     const progressFill = document.querySelector(".progress-fill");
     const progressPercent = document.getElementById("progressPercent");
+
+    // change here: create hidden UI elements for 'creating roadmap' and for errors
+    // Creating roadmap card (hidden initially)
+    const creatingRoadmapOverlay = document.createElement("div");
+    creatingRoadmapOverlay.className = "modal-overlay hidden";
+    creatingRoadmapOverlay.id = "creatingRoadmapOverlay";
+    creatingRoadmapOverlay.innerHTML = `
+        <div class="modal small-modal">
+            <div class="modal-header">
+                <h3>Creating Roadmap</h3>
+            </div>
+            <div class="modal-content" style="display:flex;align-items:center;gap:12px;">
+                <div class="spinner" aria-hidden="true" style="width:28px;height:28px;border-radius:50%;border:3px solid rgba(0,0,0,0.08);border-top-color:currentColor;animation:spin 1s linear infinite;"></div>
+                <div>
+                    <p style="margin:0">We're mapping your execution path. This may take a few seconds...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(creatingRoadmapOverlay);
+
+    // Error card (hidden initially)
+    const errorOverlay = document.createElement("div");
+    errorOverlay.className = "modal-overlay hidden";
+    errorOverlay.id = "errorOverlay";
+    errorOverlay.innerHTML = `
+        <div class="modal delete-modal">
+            <div class="modal-header">
+                <h3>Error</h3>
+                <button class="close-modal" id="closeErrorOverlay">&times;</button>
+            </div>
+            <div class="modal-content">
+                <p id="errorOverlayMessage">An unknown error occurred.</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(errorOverlay);
+    const errorOverlayMessage = document.getElementById("errorOverlayMessage");
+    const closeErrorOverlay = document.getElementById("closeErrorOverlay");
+    closeErrorOverlay.addEventListener("click", () => {
+        errorOverlay.classList.remove("active");
+        errorOverlay.classList.add("hidden");
+    });
+
+    // change here: inject minimal keyframes for spinner used in creating overlay
+    const _style = document.createElement('style');
+    _style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+    document.head.appendChild(_style);
     
     // --- Reflections Drawer ---
     const reflectionsBtn = document.getElementById("reflectionsBtn");
@@ -176,25 +224,55 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     createGoalBtn.addEventListener("click", () => {
-        const title = document.getElementById("newGoalTitle").value.trim();
-        const description = document.getElementById("newGoalDescription").value.trim();
-        
-        if (title) {
-            addGoalToList(title);
-            newGoalOverlay.classList.remove("active");
-            newGoalOverlay.classList.add("hidden");
-            document.getElementById("newGoalTitle").value = "";
-            document.getElementById("newGoalDescription").value = "";
-        }
+        // change here: show creating roadmap card and wait for 5s before finishing
+        (async () => {
+            const title = document.getElementById("newGoalTitle").value.trim();
+            const description = document.getElementById("newGoalDescription").value.trim();
+            // change here: read deadline value from modal
+            const deadline = document.getElementById("newGoalDeadline").value;
+            const formatted_deadline = (deadline === "") ? null : deadline;
+            if (!title || !description) return;
+
+            try {
+                // show creating overlay
+                creatingRoadmapOverlay.classList.remove("hidden");
+                creatingRoadmapOverlay.classList.add("active");
+
+                // simulate server-side roadmap generation delay (5s)
+                await create_goal(
+                    title,
+                    description,
+                    formatted_deadline
+                )
+
+                newGoalOverlay.classList.remove("active");
+                newGoalOverlay.classList.add("hidden");
+
+                document.getElementById("newGoalTitle").value = "";
+                document.getElementById("newGoalDescription").value = "";
+            } catch (err) {
+                // change here: show error overlay with message
+                showError(err && err.message ? err.message : "Failed to create goal.");
+            } finally {
+                // always hide creating overlay
+                creatingRoadmapOverlay.classList.remove("active");
+                creatingRoadmapOverlay.classList.add("hidden");
+            }
+        })();
     });
 
-    function addGoalToList(title) {
+    function addGoalToList(title, deadline, goal_id) {
         const goalItem = document.createElement("div");
         goalItem.classList.add("goal-item");
+        goalItem.setAttribute("id", `${goal_id}`)
         goalItem.innerHTML = `
             <div class="goal-info">
                 <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                <span class="goal-title">${title}</span>
+                <div style="display:flex;flex-direction:column;min-width:0">
+                    <span class="goal-title">${title}</span>
+                    <!-- change here: display deadline if provided -->
+                    <span class="goal-deadline" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">${''}</span>
+                </div>
             </div>
             <div class="goal-actions">
                 <button class="action-btn rename-btn" title="Rename">
@@ -206,26 +284,58 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
         
-        goalItem.addEventListener("click", (e) => {
-            if (!e.target.closest(".action-btn")) {
-                selectGoal(goalItem);
-            }
-        });
+        // change here: populate deadline display
+        if (deadline) {
+            const dl = goalItem.querySelector('.goal-deadline');
+            if (dl) dl.textContent = `Due ${deadline}`;
+        }
+
+        // Selection is handled via delegated listener on `goalsList`.
+        // (No per-item click listener here to avoid duplicates.)
         
         setupGoalActions(goalItem);
-        
-        goalsList.appendChild(goalItem);
+
+        // insert new goals above existing goal items so they're hoisted to the top
+        const firstExistingGoal = goalsList.querySelector('.goal-item');
+        // try to find the footer in the left sidebar (may be outside goalsList depending on template)
+        const sidebarFooter = document.querySelector('#sidebarLeft .sidebar-footer') || goalsList.querySelector('.sidebar-footer');
+
+        if (firstExistingGoal) {
+            goalsList.insertBefore(goalItem, firstExistingGoal);
+        } else if (sidebarFooter && sidebarFooter.parentNode) {
+            // Insert before footer in its parent so the new goal doesn't end up after the user profile
+            sidebarFooter.parentNode.insertBefore(goalItem, sidebarFooter);
+        } else {
+            goalsList.appendChild(goalItem);
+        }
+
+        // make the newly created goal active and hoist it to the top
+        try {
+            selectGoal(goalItem);
+        } catch (err) {
+            console.warn('Could not auto-select new goal:', err);
+        }
     }
 
     function selectGoal(goalItem) {
         goalsList.querySelectorAll(".goal-item").forEach(item => {
             item.classList.remove("active");
         });
+        // here: make clicked goal active and hoist it to the top of the list
         goalItem.classList.add("active");
-        
+        try {
+            if (goalsList && goalsList.firstElementChild !== goalItem) {
+                goalsList.prepend(goalItem);
+            }
+        } catch (err) {
+            // fallback: ignore if DOM manipulation fails
+            console.warn('Could not hoist goal:', err);
+        }
+
         const goalTitle = goalItem.querySelector(".goal-title").textContent;
         document.querySelector(".goal-context").textContent = `Working on: ${goalTitle}`;
-        
+        const goal_id = goalItem.id;
+        get_roadmap(goal_id);
         // Close mobile sidebar after selection
         if (window.innerWidth <= 1024) {
             closeLeftSidebar();
@@ -233,27 +343,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function setupGoalActions(goalItem) {
+        if (goalItem.dataset.actionsAttached) return;
+        goalItem.dataset.actionsAttached = "true";
+
         const renameBtn = goalItem.querySelector(".rename-btn");
         const deleteBtn = goalItem.querySelector(".delete-btn");
         
-        renameBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            currentRenameGoal = goalItem;
-            const currentTitle = goalItem.querySelector(".goal-title").textContent;
-            renameGoalTitle.value = currentTitle;
-            renameGoalOverlay.classList.remove("hidden");
-            renameGoalOverlay.classList.add("active");
-        });
+        if (renameBtn) {
+            renameBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                currentRenameGoal = goalItem;
+                const currentTitle = goalItem.querySelector(".goal-title").textContent;
+                renameGoalTitle.value = currentTitle;
+                renameGoalOverlay.classList.remove("hidden");
+                renameGoalOverlay.classList.add("active");
+            });
+        }
         
-        deleteBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            currentDeleteGoal = goalItem;
-            deleteGoalOverlay.classList.remove("hidden");
-            deleteGoalOverlay.classList.add("active");
-        });
+        if (deleteBtn) {
+            deleteBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                currentDeleteGoal = goalItem;
+                deleteGoalOverlay.classList.remove("hidden");
+                deleteGoalOverlay.classList.add("active");
+            });
+        }
     }
 
     document.querySelectorAll(".goal-item").forEach(setupGoalActions);
+
+    // here: delegate click events on the goals list so existing items also trigger selection
+    if (goalsList) {
+        goalsList.addEventListener('click', (e) => {
+            const clickedItem = e.target.closest('.goal-item');
+            if (!clickedItem) return;
+            // ignore clicks on action buttons (rename/delete)
+            if (e.target.closest('.action-btn')) return;
+            selectGoal(clickedItem);
+        });
+    }
 
     // --- Rename Goal ---
     closeRenameGoal.addEventListener("click", () => {
@@ -312,39 +440,82 @@ document.addEventListener("DOMContentLoaded", () => {
     reflectionsOverlay.addEventListener("click", closeReflectionsFunc);
 
     // --- Roadmap Completion Logic (System 2 → System 1) ---
-    completeBtns.forEach(btn => {
-        btn.addEventListener("click", function() {
-            const phaseCard = this.closest(".phase-card");
-            const phaseTitle = phaseCard.querySelector("h4").textContent;
-            
-            phaseCard.classList.remove("active");
-            phaseCard.classList.add("completed");
-            this.textContent = "Completed";
-            this.classList.add("disabled");
-            this.disabled = true;
-            phaseCard.querySelector(".phase-status").textContent = "✓";
-            
-            const nextPhase = phaseCard.nextElementSibling;
-            if (nextPhase && nextPhase.classList.contains("locked")) {
-                nextPhase.classList.remove("locked");
-                nextPhase.classList.add("active");
-                nextPhase.querySelector(".phase-status").textContent = "●";
-                nextPhase.querySelector(".phase-btn").classList.remove("disabled");
-                nextPhase.querySelector(".phase-btn").disabled = false;
-                nextPhase.querySelector(".phase-btn").classList.add("complete-btn");
-            }
-            
-            updateProgress();
+    async function completePhaseByButton(btn) {
+        const phaseCard = btn.closest(".phase-card");
+        const phaseTitle = phaseCard.querySelector("h4").textContent;
+        const phaseId = btn.dataset.phaseId;
 
-            setTimeout(() => {
-                addMilestoneMessage(phaseTitle);
-            }, 500);
-            
-            // Close mobile sidebar after completion
-            if (window.innerWidth <= 1024) {
-                closeRightSidebar();
+        // optimistically mark current as completed
+        phaseCard.classList.remove("active");
+        phaseCard.classList.add("completed");
+        btn.textContent = "Completed";
+        btn.classList.add("disabled");
+        btn.disabled = true;
+        const statusEl = phaseCard.querySelector(".phase-status");
+        if (statusEl) statusEl.textContent = "✓";
+
+        try {
+            if (phaseId) {
+                const res = await fetch(`/updatestatus/${phaseId}`);
+                if (res.status === 200) {
+                    const data = await res.json();
+                    const nextId = data.next_phase;
+                    if (nextId) {
+                        const nextPhaseEl = document.getElementById(String(nextId));
+                        if (nextPhaseEl) {
+                            nextPhaseEl.classList.remove("locked");
+                            nextPhaseEl.classList.add("active");
+                            const ns = nextPhaseEl.querySelector('.phase-status');
+                            if (ns) ns.textContent = '●';
+
+                            // replace/enable the button
+                            let nextBtn = nextPhaseEl.querySelector('.phase-btn');
+                            if (nextBtn) {
+                                const newBtn = document.createElement('button');
+                                newBtn.className = 'phase-btn complete-btn';
+                                newBtn.dataset.phaseId = String(nextId);
+                                newBtn.textContent = 'Mark Complete';
+                                nextBtn.replaceWith(newBtn);
+                                nextBtn = newBtn;
+                            } else {
+                                const newBtn = document.createElement('button');
+                                newBtn.className = 'phase-btn complete-btn';
+                                newBtn.dataset.phaseId = String(nextId);
+                                newBtn.textContent = 'Mark Complete';
+                                nextPhaseEl.appendChild(newBtn);
+                                nextBtn = newBtn;
+                            }
+
+                            // attach handler to newly enabled button
+                            nextBtn.addEventListener('click', () => completePhaseByButton(nextBtn));
+                        }
+                    }
+                } else if (res.status === 204) {
+                    // no next phase
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    console.error('Failed to update phase status', errData);
+                    showError(errData.error || 'Failed to update phase status');
+                }
             }
-        });
+        } catch (err) {
+            console.error('Error updating phase status', err);
+            showError('Could not update phase status');
+        }
+
+        updateProgress();
+
+        setTimeout(() => {
+            addMilestoneMessage(phaseTitle);
+        }, 500);
+
+        if (window.innerWidth <= 1024) {
+            closeRightSidebar();
+        }
+    }
+
+    completeBtns.forEach(btn => {
+        btn.addEventListener('click', function() { completePhaseByButton(this); });
     });
 
     function updateProgress() {
@@ -376,6 +547,21 @@ document.addEventListener("DOMContentLoaded", () => {
         scrollToBottom();
     }
 
+    // change here: helper to show errors in the created error overlay
+    function showError(message, autoHide = true) {
+        const msgEl = document.getElementById("errorOverlayMessage");
+        if (msgEl) msgEl.textContent = message;
+        errorOverlay.classList.remove("hidden");
+        errorOverlay.classList.add("active");
+
+        if (autoHide) {
+            setTimeout(() => {
+                errorOverlay.classList.remove("active");
+                errorOverlay.classList.add("hidden");
+            }, 5000);
+        }
+    }
+
     generatePlanBtn.addEventListener("click", () => {
         alert("Generating new roadmap based on your goal...");
     });
@@ -384,4 +570,146 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("roadmapEmpty").classList.add("hidden");
         document.getElementById("phasesList").classList.remove("hidden");
     });
+
+    async function create_goal(title, description, deadline){
+        try{
+            const res = await fetch("/create_goal/", {
+                method:"POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    title:title,
+                    description:description,
+                    deadline:deadline
+                })
+            })
+        
+            const data = await res.json();
+            
+            if(res.status === 405){
+                errorOverlay.classList.remove("hidden");
+                errorOverlay.classList.add("active");
+                console.error("goal creation error", data.error);
+            }
+            else if(res.status === 400 && data.errors){
+                const error = Object.values(data.errors)[0];
+                errorOverlay.classList.remove("active");
+                errorOverlay.classList.add("hidden");
+                errorOverlayMessage.textContent = error[0];
+                console.error("goal creation error", error[0]);
+            }
+            else if(res.status === 400 && data.error){
+                showError(data.error);
+                console.error("goal creation error", data.error);
+            }
+            else if(res.status === 500){
+                errorOverlay.classList.remove("active");
+                errorOverlay.classList.add("hidden");
+                console.error("goal creation error", data.error);
+            }
+            else if(res.status === 200){
+                addGoalToList(title, deadline, data.goal_id);
+            }
+        }
+
+        catch(error){
+            errorOverlay.classList.remove("active");
+            errorOverlay.classList.add("hidden");
+            console.error("goal creation error", error);
+        }
+        
+    }
+
+    async function get_roadmap(goal_id){
+        try{
+            const res = await fetch(`/getroadmap/${goal_id}`);
+            const data = await res.json();
+            if(res.status === 405){
+                showError("Something went wrong try again later or contact us");
+                console.error(data.error)
+            }
+
+            else if(res.status === 404){
+                showError(data.error);
+            }
+
+            else if(res.status === 500){
+                showError("Something went wrong try again later or contact us");
+                console.error(data.error);
+            }
+
+            else if(res.status === 200){
+                // Render fetched phases into the right-sidebar `phasesList`.
+                try {
+                    const phasesListEl = document.getElementById('phasesList');
+                    if (!phasesListEl) return;
+
+                    // data is a mapping of id -> { phase_id, phase_order, phase_title, phase_status }
+                    const phasesArray = Object.values(data || {});
+                    // order by phase_order
+                    phasesArray.sort((a, b) => (a.phase_order || 0) - (b.phase_order || 0));
+
+                    // Clear existing mock/example phases
+                    phasesListEl.innerHTML = '';
+
+                    phasesArray.forEach(phase => {
+                        const phaseId = phase.phase_id;
+                        const order = phase.phase_order;
+                        const title = phase.phase_title || '';
+                        const status = (phase.phase_status || '').toLowerCase();
+
+                        const card = document.createElement('div');
+                        card.className = 'phase-card';
+                        // Set HTML id to the phase_id as requested
+                        card.id = String(phaseId);
+
+                        let statusSymbol = '';
+                        let btnHtml = '';
+
+                        if (status === 'completed') {
+                            card.classList.add('completed');
+                            statusSymbol = '✓';
+                            btnHtml = '<button class="phase-btn disabled" disabled>Completed</button>';
+                        } else if (status === 'in_progress' || status === 'inprogress') {
+                            card.classList.add('active');
+                            statusSymbol = '●';
+                            btnHtml = `<button class="phase-btn complete-btn" data-phase-id="${phaseId}">Mark Complete</button>`;
+                        } else {
+                            // pending / unknown -> locked
+                            card.classList.add('locked');
+                            statusSymbol = '🔒';
+                            btnHtml = '<button class="phase-btn disabled" disabled>Locked</button>';
+                        }
+
+                        card.innerHTML = `
+                            <div class="phase-header">
+                                <span class="phase-status">${statusSymbol}</span>
+                                <h4>${title}</h4>
+                            </div>
+                            <p></p>
+                            ${btnHtml}
+                        `;
+
+                        phasesListEl.appendChild(card);
+                    });
+
+                    // Rebind complete button handlers for newly created buttons
+                    const newCompleteBtns = phasesListEl.querySelectorAll('.complete-btn');
+                    newCompleteBtns.forEach(btn => {
+                        btn.addEventListener('click', function() { completePhaseByButton(this); });
+                    });
+
+                    // Update progress display after rendering
+                    updateProgress();
+                }
+                catch (err) {
+                    console.error('Error rendering roadmap phases', err);
+                }
+            }
+        }
+
+        catch(error){
+            showError("Something went wrong try again later or contact us");
+            console.error(error)
+        }
+    }
 });
