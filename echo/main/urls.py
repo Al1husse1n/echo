@@ -8,5 +8,8 @@ urlpatterns= [
     path('auth/', views.auth, name='auth'),
     path('chat/', views.chat, name="chat"),
     path('authentication/', views.authentication, name="authentication"),
-    path('profileform/', views.profile_form, name='profileform')
+    path('profileform/', views.profile_form, name='profileform'),
+    path('create_goal/', views.create_goal, name='creategoal'),
+    path('getroadmap/<str:goal_id>', views.get_roadmap, name='getroadmap'),
+    path('updatestatus/<str:phase_id>', views.update_status, name='updatestatus')
 ]

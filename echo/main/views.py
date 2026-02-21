@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login,logout, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from django.core.exceptions import ValidationError
 from .models import *
+from agent.roadmap import generate_roadmap
 
 def home(request):
     return render(request, 'main/home.html')
@@ -14,7 +15,9 @@ def auth(request):
     return render(request, 'main/auth.html')
 
 def chat(request):
-    return render(request, 'main/chat.html')
+    current_user =  request.user
+    goals = current_user.goals.all()
+    return render(request, 'main/chat.html', {"goals": goals})
 
 @csrf_exempt
 def authentication(request):
@@ -80,7 +83,6 @@ def profile_form(request):
         )
         future_profile.full_clean()
         future_profile.save()
-        print(future_profile)
         
         return JsonResponse({"message": "Future profile successfully saved"}, status=200)
     
@@ -88,4 +90,118 @@ def profile_form(request):
         return JsonResponse({"errors": e.message_dict}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt    
+def create_goal(request):
+    if request.method != "POST":
+        return JsonResponse({"error":"only POST request is allowed"}, status=405)
+    try:
+        current_user = request.user
+        data = json.loads(request.body)
+        goal_title = data.get("title")
+        goal_description = data.get("description")
+        goal_deadline = data.get("deadline")
+        
+        goal = Goal(
+            user = current_user,
+            title = goal_title,
+            description = goal_description,
+            deadline = goal_deadline
+        )
+
+        #generate roadmap
+        ai_roadmap = generate_roadmap(goal_title, goal_description, goal_deadline)
+        print(ai_roadmap)
+        if ai_roadmap.get("error"):
+            print(ai_roadmap.get("error"))
+            return JsonResponse({"error": ai_roadmap.get("error")}, status=400)
+        else:
+            goal.full_clean()
+            goal.save()
+            print(goal)
+            roadmap = Roadmap(
+                goal = goal,
+                summary = ai_roadmap.get("summary")
+            )
+            roadmap.full_clean()
+            roadmap.save()
+            print(roadmap)
+
+            for phase in ai_roadmap.get("phases"):
+                roadmap_phase = RoadmapPhase(
+                    roadmap = roadmap,
+                    phase_order = phase.get("phase_order"),
+                    title = phase.get("title"),
+                    description = phase.get("description"),
+                    completion_criteria = [criteria for criteria in phase.get("completion_criteria", ["none"])]
+                )
+                if ai_roadmap.get("phases").index(phase) == 0:
+                    roadmap_phase.status = "in_progress"
+
+                roadmap_phase.full_clean()
+                roadmap_phase.save()
+                print(roadmap_phase)
+            return JsonResponse({"goal_id": f"{goal.id}"}, status=200) 
+    except ValidationError as e:
+        return JsonResponse({"errors": e.message_dict}, status=400)
+    
+    except Exception as e:
+        return JsonResponse({"error": str(e)})
+    
+def get_roadmap(request, goal_id):
+    if request.method != "GET":
+        return JsonResponse({"error": "only GET requests are allowed"}, status=405)
+    try:
+        phases = {}
+        goal = Goal.objects.get(pk=int(goal_id))
+        print(goal)
+        roadmap_phases = goal.roadmap.phases.all() 
+        print(roadmap_phases)
+        for phase in roadmap_phases:
+            phases[phase.id] = phase.serialize()
+
+        return JsonResponse(phases, status = 200)
+    except Goal.DoesNotExist:
+        return JsonResponse({"error": "Goal does not exist"}, status = 404)
+    except Exception as e:
+        return JsonResponse({"error" : str(e)}, status=500)
+    
+
+def update_status(request, phase_id):
+    if request.method != "GET":
+        return JsonResponse({"error": "only GET requests are allowed"}, status=405)
+    
+    try:
+        id = int(phase_id)
+        phase = RoadmapPhase.objects.get(pk=id)
+        goal = phase.roadmap.goal
+        print(phase)
+        phase.status = "completed"
+        phase.save()
+        # Find the next phase by ordering (use phase_order) within the same roadmap
+        next_phase = RoadmapPhase.objects.filter(
+            roadmap=phase.roadmap,
+            phase_order=phase.phase_order + 1
+        ).first()
+
+        if not next_phase:
+            return HttpResponse(status=204)
+
+        next_phase.status = "in_progress"
+        next_phase.save()
+        return JsonResponse({"next_phase": f"{next_phase.id}"}, status=200)
+    
+    except RoadmapPhase.DoesNotExist:
+        return JsonResponse({"error":"Phase does not exist"}, status=404)
+    
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+        
+        
+        
+
+
+
+    
 
