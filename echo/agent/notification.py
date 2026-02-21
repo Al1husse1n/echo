@@ -56,6 +56,7 @@ class NotificationContext:
     # Optional goal context
     goal_title: str | None = None
     goal_status: str | None = None
+    goal_deadline: str | None = None
 
     # Optional roadmap context
     roadmap_summary: str | None = None
@@ -97,6 +98,7 @@ def build_notification_context(user: User, inactivity_days: int) -> Notification
 
         goal_title=active_goal.title if active_goal else None,
         goal_status=active_goal.status if active_goal else None,
+        goal_deadline=active_goal.deadline if active_goal else None,
 
         roadmap_summary=roadmap.summary if roadmap else None,
         phase_title=current_phase.title if current_phase else None,
