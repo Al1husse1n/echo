@@ -30,60 +30,30 @@
             </div>
 
             <div class="goals-list" id="goalsList">
-                <!-- Active Goal -->
-                <div class="goal-item active">
-                    <div class="goal-info">
-                        <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                        <span class="goal-title">Learn Django</span>
+                <!-- Goals -->
+                {% for goal in goals%}                          
+                    <div class="goal-item" id="{{goal.id}}">
+                        <div class="goal-info">
+                            <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            <span class="goal-title">{{goal.title}}</span>
+                        </div>
+                        <div class="goal-actions">
+                            <button class="action-btn rename-btn" title="Rename">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </button>
+                            <button class="action-btn delete-btn" title="Delete">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </div>
                     </div>
-                    <div class="goal-actions">
-                        <button class="action-btn rename-btn" title="Rename">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button class="action-btn delete-btn" title="Delete">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Other Goals -->
-                <div class="goal-item">
-                    <div class="goal-info">
-                        <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                        <span class="goal-title">Learn Spanish</span>
-                    </div>
-                    <div class="goal-actions">
-                        <button class="action-btn rename-btn" title="Rename">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button class="action-btn delete-btn" title="Delete">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="goal-item">
-                    <div class="goal-info">
-                        <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        <span class="goal-title">Build Fitness Habit</span>
-                    </div>
-                    <div class="goal-actions">
-                        <button class="action-btn rename-btn" title="Rename">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button class="action-btn delete-btn" title="Delete">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+                {%endfor%}
 
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <div class="avatar">AC</div>
+                    <div class="avatar">{{ user.username|slice:":2"|upper }}</div>
                     <div class="user-info">
-                        <span class="user-name">Alex Chen</span>
-                        <span class="user-target">Target: 2035</span>
+                        <span class="user-name">{{user.username}}</span>
+                        <span class="user-target">Target: {{use.future_profile.target_year}}</span>
                     </div>
                 </div>
             </div>
@@ -102,9 +72,9 @@
                     
                     <div class="identity-badge">
                         <span class="status-dot"></span>
-                        <span id="headerIdentity">You, 2035</span>
+                        <span id="headerIdentity">You, {{user.future_profile.target_year}}</span>
                     </div>
-                    <span class="goal-context">Working on: Learn Django</span>
+                    <span class="goal-context">Working on:</span>
                 </div>
                 <div class="header-right">
                     <button class="icon-btn" id="reflectionsBtn" title="View Past Reflections">
@@ -191,7 +161,7 @@
                         <div class="progress-fill" style="width: 40%"></div>
                     </div>
                 </div>
-
+                
                 <!-- Phases List -->
                 <div class="phases-list" id="phasesList">
                     <!-- Phase 1: Completed -->
@@ -282,12 +252,17 @@
             <div class="modal-content">
                 <div class="form-group">
                     <label for="newGoalTitle">Goal Title</label>
-                    <input type="text" id="newGoalTitle" placeholder="e.g., Learn Django, Build Fitness Habit">
+                    <input type="text" id="newGoalTitle" placeholder="e.g., Learn Django, Build Fitness Habit" required>
                 </div>
                 <div class="form-group">
-                    <label for="newGoalDescription">Why does this matter?</label>
-                    <textarea id="newGoalDescription" rows="3" placeholder="Connect this to your future identity..."></textarea>
+                    <label for="newGoalDescription">Goal Description</label>
+                    <textarea id="newGoalDescription" rows="3" placeholder="e.g., I want to be fluent in spanish..." required></textarea>
                 </div>
+                    <!-- change here: added deadline input -->
+                    <div class="form-group">
+                        <label for="newGoalDeadline">Deadline (optional)</label>
+                        <input type="date" id="newGoalDeadline">
+                    </div>
                 <button class="primary-btn" id="createGoalBtn">Create Goal</button>
             </div>
         </div>
