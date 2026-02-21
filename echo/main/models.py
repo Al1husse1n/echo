@@ -58,11 +58,6 @@ class Goal(models.Model):
         related_name="goals"
     )
 
-    future_profile = models.ForeignKey(
-        FutureProfile,
-        on_delete=models.CASCADE,
-        related_name="goals"
-    )
 
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -129,6 +124,7 @@ class RoadmapPhase(models.Model):
     )
 
     completed_at = models.DateTimeField(null=True, blank=True)
+    completion_criteria = models.JSONField(null=True, blank=True)
 
     class Meta:
         ordering = ["phase_order"]
@@ -136,6 +132,14 @@ class RoadmapPhase(models.Model):
 
     def __str__(self):
         return f"Phase {self.phase_order}: {self.title}"
+    
+    def serialize(self):
+        return{
+            "phase_id" : self.id,
+            "phase_order": self.phase_order,
+            "phase_title": self.title,
+            "phase_status": self.status
+        }
 
 
 class ChatMessage(models.Model):
@@ -168,6 +172,8 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender} @ {self.created_at}"
+    
+    
 
 
 class Notification(models.Model):
