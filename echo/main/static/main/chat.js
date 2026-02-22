@@ -22,27 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentDeleteGoal = null;
     
     // --- Right Sidebar: Roadmap ---
-    const generatePlanBtn = document.getElementById("generatePlanBtn");
-    const generatePlanBtnEmpty = document.getElementById("generatePlanBtnEmpty");
     const completeBtns = document.querySelectorAll(".complete-btn");
     const progressFill = document.querySelector(".progress-fill");
     const progressPercent = document.getElementById("progressPercent");
 
-    // Helper: read cookie (used for Django CSRF token)
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 
     // change here: create hidden UI elements for 'creating roadmap' and for errors
     // Creating roadmap card (hidden initially)
@@ -129,10 +112,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- Send Message (System 1) ---
-    chatForm.addEventListener("submit", (e) => {
+    chatForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const text = messageInput.value.trim();
         if (!text) return;
+
+        const activeGoal = goalsList.querySelector(".goal-item.active");
+        console.log(activeGoal);
+        const goalId = activeGoal ? activeGoal.id : null;
+        const userId = chatWindow.dataset.userId;
+
+        if (!userId || !goalId) {
+            showError("Please select a goal first.");
+            return;
+        }
 
         addMessage(text, "user");
         messageInput.value = "";
@@ -140,12 +133,43 @@ document.addEventListener("DOMContentLoaded", () => {
         sendBtn.disabled = true;
 
         showTypingIndicator();
-        
-        setTimeout(() => {
+
+        try {
+            const res = await fetch("/sendmessage/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    goal_id: parseInt(goalId, 10),
+                    user_message: text
+                })
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok) {
+                const aiContent = data.ai_content || "";
+                addMessage(aiContent, "ai");
+            } else if (res.status === 404) {    
+                showError(data.error || "Goal not found.");
+            } else if (res.status === 400) {
+                const errMsg = data.errors ? Object.values(data.errors).flat().join(" ") : (data.error || "Invalid request.");
+                showError(errMsg);
+            } else if (res.status === 500) {
+                showError(data.error || "Something went wrong. Please try again later.");
+                console.error("Chat error:", data.error);
+            } else {
+                showError(data.error || "Failed to send message. Please try again.");
+                console.error("Chat error:", data.error);
+            }
+        } catch (err) {
+            console.error("Chat error:", err);
+            showError("Network error. Please check your connection and try again.");
+        } finally {
             removeTypingIndicator();
-            const mockResponse = "I hear you. Remember why we started this. Do you want to check the roadmap?";
-            addMessage(mockResponse, "ai");
-        }, 1500);
+            sendBtn.disabled = messageInput.value.trim().length === 0;
+        }
     });
 
     function addMessage(text, type) {
@@ -600,14 +624,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    generatePlanBtn.addEventListener("click", () => {
-        alert("Generating new roadmap based on your goal...");
-    });
-
-    generatePlanBtnEmpty.addEventListener("click", () => {
-        document.getElementById("roadmapEmpty").classList.add("hidden");
-        document.getElementById("phasesList").classList.remove("hidden");
-    });
+    
 
     async function create_goal(title, description, deadline){
         try{
