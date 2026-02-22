@@ -75,6 +75,12 @@
                     <span class="goal-context">Working on:</span>
                 </div>
                 <div class="header-right">
+                    <form method="post" action="{%url 'logout'%}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="icon-btn" title="Log out">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        </button>
+                    </form>
                     <button class="icon-btn" id="reflectionsBtn" title="View Past Reflections">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                         <span class="badge-count">3</span>
@@ -88,15 +94,12 @@
             </header>
 
             <!-- Chat Window -->
-            <div class="chat-window" id="chatWindow">
+            <div class="chat-window" id="chatWindow" data-user-id="{{ user.id }}">
                 
                 <!-- Welcome Message (System 1: Future Self) -->
                 <div class="message system-message">
                     <div class="message-content">
                         <p>Connection established. I am you, 11 years from now. I remember what you promised. What's on your mind today?</p>
-                    </div>
-                </div>
-
                 <!-- Example User Message -->
                 <div class="message user-message">
                     <div class="message-content">
@@ -121,6 +124,9 @@
                             <h4>Phase Completed</h4>
                             <p>You finished "Django Basics". This is the consistency you said mattered. Silence has a cost, but so does stopping.</p>
                         </div>
+                    </div>
+                </div>
+
                     </div>
                 </div>
 

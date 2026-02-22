@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login,logout, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -9,12 +9,15 @@ from .models import *
 from agent.roadmap import generate_roadmap
 from agent.message_tool import send_ai_message
 
+@login_required
 def home(request):
     return render(request, 'main/home.html')
+
 
 def auth(request):
     return render(request, 'main/auth.html')
 
+@login_required
 def chat(request):
     current_user =  request.user
     goals = current_user.goals.all()
@@ -55,6 +58,7 @@ def authentication(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 @csrf_exempt
+@login_required
 def profile_form(request):
     if request.method != 'POST':
         return JsonResponse({"error":"only POST request is allowed"}, status=405)
@@ -92,7 +96,8 @@ def profile_form(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-@csrf_exempt    
+@csrf_exempt  
+@login_required  
 def create_goal(request):
     if request.method != "POST":
         return JsonResponse({"error":"only POST request is allowed"}, status=405)
@@ -148,7 +153,8 @@ def create_goal(request):
     
     except Exception as e:
         return JsonResponse({"error": str(e)})
-    
+
+@login_required
 def get_roadmap(request, goal_id):
     if request.method != "GET":
         return JsonResponse({"error": "only GET requests are allowed"}, status=405)
@@ -168,6 +174,7 @@ def get_roadmap(request, goal_id):
         return JsonResponse({"error" : str(e)}, status=500)
     
 
+@login_required
 def update_status(request, phase_id):
     if request.method != "GET":
         return JsonResponse({"error": "only GET requests are allowed"}, status=405)
@@ -197,7 +204,8 @@ def update_status(request, phase_id):
     
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-    
+
+@login_required
 def delete_goal(request, goal_id):
     if request.method != "DELETE":
         return JsonResponse({"error":"only DELETE requests are allowed"}, status=405)
@@ -214,31 +222,34 @@ def delete_goal(request, goal_id):
         return JsonResponse({"error": str(e)}, status=500)
     
 @csrf_exempt    
+@login_required
 def send_message(request):
     if request.method != "POST":
         return JsonResponse({"error":"only POST requests are allowed"}, status=405)
     
     try:
         current_user = request.user
+
         data = json.loads(request.body)
-        user_id = int(data.get("user_id"))
         goal_id = int(data.get("goal_id"))
-        user_message = data.get("user_message")
+        user_content = data.get("user_message")
         goal = Goal.objects.get(pk=goal_id)
+        print(goal)
+
 
         #save user message
         user_message = ChatMessage(
             user = current_user,
             sender = "user",
-            content = user_message,
+            content = user_content,
             related_goal = goal
         )
-
         user_message.full_clean()
         user_message.save()
 
-        ai_response = send_ai_message(user_id, goal, user_message)
+        ai_response = send_ai_message(current_user.id,user_content, goal)
         print(ai_response)
+        print("here3")
 
         #save ai message
         ai_message = ChatMessage(
@@ -247,10 +258,10 @@ def send_message(request):
             content = ai_response,
             related_goal = goal
         )
-
+        print("here4")
         ai_message.full_clean()
         ai_message.save()
-
+        print("here5")
         return JsonResponse({"ai_content": ai_response}, status=200)
     
     except Goal.DoesNotExist:
@@ -260,6 +271,10 @@ def send_message(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('auth')
 
     
 
