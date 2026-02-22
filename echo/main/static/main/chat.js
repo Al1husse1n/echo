@@ -12,12 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeNewGoal = document.getElementById("closeNewGoal");
     const createGoalBtn = document.getElementById("createGoalBtn");
     
-    // Rename Modal
-    const renameGoalOverlay = document.getElementById("renameGoalOverlay");
-    const closeRenameGoal = document.getElementById("closeRenameGoal");
-    const renameGoalTitle = document.getElementById("renameGoalTitle");
-    const saveRenameBtn = document.getElementById("saveRenameBtn");
-    let currentRenameGoal = null;
+    // (rename removed)
     
     // Delete Modal
     const deleteGoalOverlay = document.getElementById("deleteGoalOverlay");
@@ -32,6 +27,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const completeBtns = document.querySelectorAll(".complete-btn");
     const progressFill = document.querySelector(".progress-fill");
     const progressPercent = document.getElementById("progressPercent");
+
+    // Helper: read cookie (used for Django CSRF token)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
     // change here: create hidden UI elements for 'creating roadmap' and for errors
     // Creating roadmap card (hidden initially)
@@ -275,9 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             </div>
             <div class="goal-actions">
-                <button class="action-btn rename-btn" title="Rename">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                </button>
                 <button class="action-btn delete-btn" title="Delete">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
@@ -346,20 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (goalItem.dataset.actionsAttached) return;
         goalItem.dataset.actionsAttached = "true";
 
-        const renameBtn = goalItem.querySelector(".rename-btn");
         const deleteBtn = goalItem.querySelector(".delete-btn");
-        
-        if (renameBtn) {
-            renameBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                currentRenameGoal = goalItem;
-                const currentTitle = goalItem.querySelector(".goal-title").textContent;
-                renameGoalTitle.value = currentTitle;
-                renameGoalOverlay.classList.remove("hidden");
-                renameGoalOverlay.classList.add("active");
-            });
-        }
-        
         if (deleteBtn) {
             deleteBtn.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -372,6 +367,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll(".goal-item").forEach(setupGoalActions);
 
+    // Auto-select the top (first) goal on load and fetch its roadmap
+    (function autoSelectTopGoal() {
+        if (!goalsList) return;
+        const firstGoal = goalsList.querySelector('.goal-item');
+        const roadmapEmpty = document.getElementById('roadmapEmpty');
+
+        if (firstGoal) {
+            // ensure empty-state is hidden when we have a goal
+            if (roadmapEmpty) roadmapEmpty.classList.add('hidden');
+            try {
+                selectGoal(firstGoal);
+            } catch (err) {
+                console.warn('Could not auto-select top goal:', err);
+            }
+        } else {
+            // show empty roadmap state when there are no goals
+            if (roadmapEmpty) roadmapEmpty.classList.remove('hidden');
+        }
+    })();
+
     // here: delegate click events on the goals list so existing items also trigger selection
     if (goalsList) {
         goalsList.addEventListener('click', (e) => {
@@ -383,46 +398,69 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- Rename Goal ---
-    closeRenameGoal.addEventListener("click", () => {
-        renameGoalOverlay.classList.remove("active");
-        renameGoalOverlay.classList.add("hidden");
-    });
-
-    saveRenameBtn.addEventListener("click", () => {
-        if (currentRenameGoal) {
-            const newTitle = renameGoalTitle.value.trim();
-            if (newTitle) {
-                currentRenameGoal.querySelector(".goal-title").textContent = newTitle;
-                if (currentRenameGoal.classList.contains("active")) {
-                    document.querySelector(".goal-context").textContent = `Working on: ${newTitle}`;
-                }
-            }
-            renameGoalOverlay.classList.remove("active");
-            renameGoalOverlay.classList.add("hidden");
-            currentRenameGoal = null;
-        }
-    });
+    // (rename functionality removed)
 
     // --- Delete Goal ---
-    closeDeleteGoal.addEventListener("click", () => {
-        deleteGoalOverlay.classList.remove("active");
-        deleteGoalOverlay.classList.add("hidden");
-    });
-
-    cancelDeleteBtn.addEventListener("click", () => {
-        deleteGoalOverlay.classList.remove("active");
-        deleteGoalOverlay.classList.add("hidden");
-    });
-
-    confirmDeleteBtn.addEventListener("click", () => {
-        if (currentDeleteGoal) {
-            currentDeleteGoal.remove();
+    if (closeDeleteGoal) {
+        closeDeleteGoal.addEventListener("click", () => {
             deleteGoalOverlay.classList.remove("active");
             deleteGoalOverlay.classList.add("hidden");
-            currentDeleteGoal = null;
-        }
-    });
+        });
+    }
+
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener("click", () => {
+            deleteGoalOverlay.classList.remove("active");
+            deleteGoalOverlay.classList.add("hidden");
+        });
+    }
+
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener("click", () => {
+            (async () => {
+                if (!currentDeleteGoal) return;
+
+                const goalId = currentDeleteGoal.id;
+                confirmDeleteBtn.disabled = true;
+                const prevText = confirmDeleteBtn.textContent;
+                confirmDeleteBtn.textContent = 'Deleting...';
+
+                try {
+                    const res = await fetch(`/deletegoal/${goalId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken') || ''
+                        },
+                        credentials: 'same-origin'
+                    });
+
+                    if (res.status === 200) {
+                        // remove from DOM
+                        currentDeleteGoal.remove();
+                        deleteGoalOverlay.classList.remove("active");
+                        deleteGoalOverlay.classList.add("hidden");
+                        currentDeleteGoal = null;
+                    } else if (res.status === 403) {
+                        showError('Permission denied. Please refresh the page and try again.');
+                    } else if (res.status === 404) {
+                        const data = await res.json().catch(() => ({}));
+                        showError(data.error || 'Goal not found');
+                    } else if (res.status === 405) {
+                        showError('Invalid request method for deleting goal');
+                    } else {
+                        const data = await res.json().catch(() => ({}));
+                        showError(data.error || 'Failed to delete goal');
+                    }
+                } catch (err) {
+                    console.error('Error deleting goal', err);
+                    showError('Network error deleting goal');
+                } finally {
+                    confirmDeleteBtn.disabled = false;
+                    confirmDeleteBtn.textContent = prevText;
+                }
+            })();
+        });
+    }
 
     // --- Reflections Drawer ---
     function openReflections() {
