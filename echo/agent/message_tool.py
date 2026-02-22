@@ -101,7 +101,7 @@ def get_user_context(user_id:int, goal:Goal):
             pass
 
     #fetch chat message
-    chats = ChatMessage.objects.filter(related_goal=goal).order_by("-created_at")[:5]
+    chats = ChatMessage.objects.filter(related_goal=goal).order_by("-created_at")[:7]
     recent_messages = []
 
     for chat in chats:
@@ -141,7 +141,7 @@ def get_user_context(user_id:int, goal:Goal):
 
     return context
 
-def send_message(user_id:int, goal:Goal, user_message:str):
+def send_ai_message(user_id:int, goal:Goal, user_message:str):
     context = get_user_context(user_id, goal)
     system_prompt = system_prompt.format(username=context.username)
 
