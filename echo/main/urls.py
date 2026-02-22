@@ -11,5 +11,7 @@ urlpatterns= [
     path('profileform/', views.profile_form, name='profileform'),
     path('create_goal/', views.create_goal, name='creategoal'),
     path('getroadmap/<str:goal_id>', views.get_roadmap, name='getroadmap'),
-    path('updatestatus/<str:phase_id>', views.update_status, name='updatestatus')
+    path('updatestatus/<str:phase_id>', views.update_status, name='updatestatus'),
+    path('deletegoal/<str:goal_id>', views.delete_goal, name='deletegoal'),
+    path('sendmessage/', views.send_message, name='send_message')
 ]

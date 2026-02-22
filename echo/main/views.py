@@ -7,6 +7,7 @@ import json
 from django.core.exceptions import ValidationError
 from .models import *
 from agent.roadmap import generate_roadmap
+from agent.message_tool import send_ai_message
 
 def home(request):
     return render(request, 'main/home.html')
@@ -196,6 +197,71 @@ def update_status(request, phase_id):
     
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+    
+def delete_goal(request, goal_id):
+    if request.method != "DELETE":
+        return JsonResponse({"error":"only DELETE requests are allowed"}, status=405)
+    
+    try:
+        goal = Goal.objects.get(id=int(goal_id))
+        goal.delete()
+        return JsonResponse({"message": "goal deleted successfully"}, status=200)
+
+    except Goal.DoesNotExist:
+        return JsonResponse({"error" : "Goal doesnot exist"}, status=404)
+    
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+@csrf_exempt    
+def send_message(request):
+    if request.method != "POST":
+        return JsonResponse({"error":"only POST requests are allowed"}, status=405)
+    
+    try:
+        current_user = request.user
+        data = json.loads(request.body)
+        user_id = int(data.get("user_id"))
+        goal_id = int(data.get("goal_id"))
+        user_message = data.get("user_message")
+        goal = Goal.objects.get(pk=goal_id)
+
+        #save user message
+        user_message = ChatMessage(
+            user = current_user,
+            sender = "user",
+            content = user_message,
+            related_goal = goal
+        )
+
+        user_message.full_clean()
+        user_message.save()
+
+        ai_response = send_ai_message(user_id, goal, user_message)
+        print(ai_response)
+
+        #save ai message
+        ai_message = ChatMessage(
+            user = current_user,
+            sender = "echo",
+            content = ai_response,
+            related_goal = goal
+        )
+
+        ai_message.full_clean()
+        ai_message.save()
+
+        return JsonResponse({"ai_content": ai_response}, status=200)
+    
+    except Goal.DoesNotExist:
+        return JsonResponse({"error" : "Goal wasn't found"}, status=404)
+    except ValidationError as e:
+        return JsonResponse({"errors" : e.message_dict}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+    
 
         
         
