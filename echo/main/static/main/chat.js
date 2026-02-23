@@ -422,7 +422,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // (rename functionality removed)
 
     // --- Delete Goal ---
     if (closeDeleteGoal) {
@@ -600,7 +599,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 <div class="milestone-text">
                     <h4>Phase Completed</h4>
-                    <p>You finished "${phaseTitle}". This is the consistency you said mattered. Silence has a cost, but so does stopping.</p>
+                    <p>You finished "${phaseTitle}".</p>
                 </div>
             </div>
         `;
