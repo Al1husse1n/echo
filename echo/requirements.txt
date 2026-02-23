@@ -22,5 +22,5 @@ langchain-google-genai==4.2.1
 # Web servers
 gunicorn==25.1.0
 uvicorn==0.40.0
-dj-database-url==1.2.0
-psycopg2-binary==2.9.9  # needed for Postgres
+psycopg>=3.1
+dj-database-url>=1.2.0
