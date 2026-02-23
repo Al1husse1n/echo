@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-+j_9vhrwekmfck@=*q_i-p86ayhzm#s#pt^c4t-8)#$&&vaz6(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app']
 
 
 # Application definition
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'anymail',
-    'django_crontab'
+    'django_crontab'     #works only for linux
 ]
 
 MIDDLEWARE = [
