@@ -9,6 +9,7 @@ from .models import *
 from agent.roadmap import generate_roadmap
 from agent.message_tool import send_ai_message
 from django.core.mail import send_mail
+from datetime import datetime
 
 @login_required
 def home(request):
@@ -22,7 +23,9 @@ def auth(request):
 def chat(request):
     current_user =  request.user
     goals = current_user.goals.all()
-    return render(request, 'main/chat.html', {"goals": goals})
+    current_year = datetime.now().year
+    year = current_user.future_profile.target_year - current_year
+    return render(request, 'main/chat.html', {"goals": goals, "year":year})
 
 @csrf_exempt
 def authentication(request):
