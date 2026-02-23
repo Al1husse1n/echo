@@ -1,0 +1,24 @@
+﻿# Core framework
+Django==6.0.2
+
+# Environment & configuration
+python-dotenv==1.2.1
+
+# Static files (production)
+whitenoise==6.11.0
+
+# Email (Anymail + SendInBlue)
+django-anymail==14.0
+
+# Google generative AI SDK
+google-genai==1.64.0
+
+# LangChain AI libraries
+langchain==1.2.10
+langchain-google-genai==4.2.1
+# langchain-classic doesn’t have a PyPI package named “langchain-classic”,
+# often the main ‘langchain’ covers its functionality — remove if unused
+
+# Web servers
+gunicorn==25.1.0
+uvicorn==0.40.0
