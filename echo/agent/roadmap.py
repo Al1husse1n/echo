@@ -1,15 +1,11 @@
 from dotenv import load_dotenv
 import json
-from google import genai
-
-
-load_dotenv()
-
-client=genai.Client()
 
 
 def generate_roadmap(goal_title:str, goal_description:str, deadline:str=None):
-    
+    from google import genai
+    load_dotenv()
+    client=genai.Client()
     error_json = "{'error' : 'type your message here'}"
     json_format = """
 {

@@ -5,9 +5,6 @@ from typing import Optional, List, Dict, Union
 from dotenv import load_dotenv
 from django.utils import timezone
 
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_classic.schema import SystemMessage, HumanMessage
-
 from main.models import User, FutureProfile, Goal, Roadmap, ChatMessage
 
 
@@ -178,6 +175,8 @@ def get_user_context(user_id: int, goal: Optional[Goal] = None) -> Union[NoGoals
 # =========================
 
 def send_ai_message(user_id: int, user_message: str, goal: Optional[Goal] = None) -> str:
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    from langchain_classic.schema import SystemMessage, HumanMessage
     context = get_user_context(user_id, goal)
 
     model = ChatGoogleGenerativeAI(

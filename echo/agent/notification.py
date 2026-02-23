@@ -1,6 +1,4 @@
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.agents import create_agent
 from dataclasses import dataclass
 from django.utils import timezone
 from main.models import User, FutureProfile, Goal,Roadmap, ChatMessage
@@ -109,6 +107,8 @@ def build_notification_context(user: User, inactivity_days: int) -> Notification
 
 
 def generate_inactivity_notification(user: User, inactivity_days: int) -> str:
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    from langchain.agents import create_agent
     context = build_notification_context(user, inactivity_days)
 
     system_prompt = NOTIFICATION_SYSTEM_PROMPT
