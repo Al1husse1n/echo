@@ -142,3 +142,19 @@ ANYMAIL = {
 EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"  # or amazon_ses.EmailBackend, or...
 DEFAULT_FROM_EMAIL = "alihusseinali1284@gmail.com"  # if you don't already have this in settings
 
+import os
+import dj_database_url
+
+# DATABASES configuration
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
+}
+
+# Ensure connections are persistent
+DATABASES['default']['CONN_MAX_AGE'] = 600  # 10 minutes
+
+# Secure SSL for Postgres
+DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+
