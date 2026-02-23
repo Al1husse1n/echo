@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'anymail',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -127,3 +133,15 @@ AUTH_USER_MODEL = "main.User"
 LOGIN_REDIRECT_URL = 'chat'
 LOGIN_URL = 'auth'
 
+#Email configuration
+ANYMAIL = {
+    # (exact settings here depend on your ESP...)
+    "SENDINBLUE_API_KEY": os.getenv("SENDINBLUE_API_KEY"),
+}
+EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"  # or amazon_ses.EmailBackend, or...
+DEFAULT_FROM_EMAIL = "alihusseinali1284@gmail.com"  # if you don't already have this in settings
+
+#scheduler for email
+CRONJOBS = [
+    ('0 9 * * *', 'django.core.management.call_command', ['send_inactivity_notifications']),
+]

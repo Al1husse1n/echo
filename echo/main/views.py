@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from .models import *
 from agent.roadmap import generate_roadmap
 from agent.message_tool import send_ai_message
+from django.core.mail import send_mail
 
 @login_required
 def home(request):
@@ -40,6 +41,12 @@ def authentication(request):
             user.save()
             user = authenticate(request, username=username, password=password)
             login(request, user)
+            send_mail(
+                "Welcome to Echo!",
+                "Congrats on joining",
+                "alihusseinali1284@gmail.com",
+                [user.email]   
+            )
             return JsonResponse({"message":"sign up successful"}, status=201)
         
         elif data.get("type") == "login":
