@@ -7,8 +7,8 @@ python-dotenv==1.0.0
 # Static files (production)
 whitenoise==6.6.0
 
-# Email (optional, only if you use it)
-django-anymail==10.0.1
+# Email (only if you need it)
+django-anymail==14.0
 
 # AI / LLM libraries
 google-genai==1.0.3
