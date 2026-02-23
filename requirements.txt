@@ -1,18 +1,21 @@
 ﻿# Core framework
-Django>=5.1.2,<6.0
+Django==5.1.4
 
 # Environment & configuration
-python-dotenv>=1.0.0
+python-dotenv==1.0.0
 
 # Static files (production)
-whitenoise>=6.6.0
+whitenoise==6.6.0
 
-# Email (Anymail + SendInBlue)
-django-anymail>=10.0
+# Email (optional, only if you use it)
+django-anymail==10.0.1
 
-google-genai>=1.0.0
-langchain>=0.3.0
-langchain-google-genai>=2.0.0
-langchain-classic>=1.0.0
-gunicorn>=22.0.0
-uvicorn>=0.30.0
+# AI / LLM libraries
+google-genai==1.0.3
+langchain==0.3.2
+langchain-google-genai==2.0.1
+langchain-classic==1.0.0
+
+# Web servers
+gunicorn==22.0.0
+uvicorn==0.30.0
