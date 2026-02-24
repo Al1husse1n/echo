@@ -176,7 +176,7 @@ def get_user_context(user_id: int, goal: Optional[Goal] = None) -> Union[NoGoals
 
 def send_ai_message(user_id: int, user_message: str, goal: Optional[Goal] = None) -> str:
     from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain_classic.schema import SystemMessage, HumanMessage
+    from langchain_core.messages import SystemMessage, HumanMessage
     context = get_user_context(user_id, goal)
 
     model = ChatGoogleGenerativeAI(
@@ -194,5 +194,6 @@ def send_ai_message(user_id: int, user_message: str, goal: Optional[Goal] = None
     ]
 
     response = model.invoke(messages)
+
 
     return response.content
