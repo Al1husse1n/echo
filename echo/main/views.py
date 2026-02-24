@@ -162,7 +162,9 @@ def create_goal(request):
         return JsonResponse({"errors": e.message_dict}, status=400)
     
     except Exception as e:
-        return JsonResponse({"error": str(e)})
+        # Return a proper server error status so the frontend
+        # does not treat this as a successful goal creation.
+        return JsonResponse({"error": str(e)}, status=500)
 
 @login_required
 def get_roadmap(request, goal_id):
