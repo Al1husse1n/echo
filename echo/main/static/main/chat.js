@@ -343,36 +343,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // make the newly created goal active and hoist it to the top
         try {
+            setTimeout(() => {
             selectGoal(goalItem);
+        }, 0);
         } catch (err) {
             console.warn('Could not auto-select new goal:', err);
         }
     }
 
-    function selectGoal(goalItem) {
-        goalsList.querySelectorAll(".goal-item").forEach(item => {
-            item.classList.remove("active");
-        });
-        // here: make clicked goal active and hoist it to the top of the list
-        goalItem.classList.add("active");
-        try {
-            if (goalsList && goalsList.firstElementChild !== goalItem) {
-                goalsList.prepend(goalItem);
-            }
-        } catch (err) {
-            // fallback: ignore if DOM manipulation fails
-            console.warn('Could not hoist goal:', err);
-        }
+   function selectGoal(goalItem) {
+    if (!goalItem) return;
 
-        const goalTitle = goalItem.querySelector(".goal-title").textContent;
-        document.querySelector(".goal-context").textContent = `Working on: ${goalTitle}`;
-        const goal_id = goalItem.id;
-        get_roadmap(goal_id);
-        // Close mobile sidebar after selection
-        if (window.innerWidth <= 1024) {
-            closeLeftSidebar();
-        }
+    const goal_id = goalItem.id;
+
+    // 🔒 HARD GUARD
+    if (!goal_id || goal_id === "undefined") {
+        console.warn("selectGoal blocked: invalid goal_id", goal_id);
+        return;
     }
+
+    goalsList.querySelectorAll(".goal-item").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    goalItem.classList.add("active");
+
+    const titleEl = goalItem.querySelector(".goal-title");
+    if (titleEl) {
+        document.querySelector(".goal-context").textContent =
+            `Working on: ${titleEl.textContent}`;
+    }
+
+    get_roadmap(goal_id);
+}
+
 
     function setupGoalActions(goalItem) {
         if (goalItem.dataset.actionsAttached) return;
