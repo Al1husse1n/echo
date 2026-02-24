@@ -51,7 +51,7 @@
                     <div class="avatar">{{ user.username|slice:":2"|upper }}</div>
                     <div class="user-info">
                         <span class="user-name">{{user.username}}</span>
-                        <span class="user-target">Target: {{use.future_profile.target_year}}</span>
+                        <span class="user-target">Target: {{user.future_profile.target_year}}</span>
                     </div>
                 </div>
             </div>
@@ -227,4 +227,5 @@
 
     <script defer src="{% static 'main/chat.js' %}"></script>
 </body>
+
 </html>
