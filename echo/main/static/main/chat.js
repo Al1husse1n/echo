@@ -297,9 +297,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function addGoalToList(title, deadline, goal_id) {
+        // guard against invalid IDs coming from the server
+        if (!goal_id || goal_id === "undefined") {
+            console.warn("addGoalToList blocked: invalid goal_id", goal_id);
+            return;
+        }
+
         const goalItem = document.createElement("div");
         goalItem.classList.add("goal-item");
-        goalItem.setAttribute("id", `${goal_id}`)
+        goalItem.setAttribute("id", String(goal_id));
         goalItem.innerHTML = `
             <div class="goal-info">
                 <svg class="goal-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
@@ -665,7 +671,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("goal creation error", data.error);
             }
             else if(res.status === 200){
-                addGoalToList(title, deadline, data.goal_id);
+                const newGoalId = data.goal_id ?? data.id ?? data.goal?.id;
+                if (!newGoalId) {
+                    console.error("goal creation error: missing goal_id in response", data);
+                    showError("Something went wrong creating your goal. Please try again.");
+                    return;
+                }
+                addGoalToList(title, deadline, newGoalId);
             }
         }
 
