@@ -2,10 +2,16 @@ from dotenv import load_dotenv
 import json
 
 
-def generate_roadmap(goal_title:str, goal_description:str, deadline:str=None):
+def generate_roadmap(goal_title: str, goal_description: str, deadline: str = None):
+    """
+    Generate a roadmap using the Gemini API.
+    If the API is unavailable (e.g. 503 errors, quota issues, network problems),
+    fall back to a minimal, locally-defined roadmap so goal creation still works.
+    """
     from google import genai
+
     load_dotenv()
-    client=genai.Client()
+    client = genai.Client()
     error_json = "{'error' : 'type your message here'}"
     json_format = """
 {
@@ -61,14 +67,36 @@ if there are no errors as specified above, return a valid JSON object with this 
 
 Generate the roadmap now:
 """
-    response = client.models.generate_content(
-            model="gemini-2.5-flash", 
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
             contents=prompt,
             config={
                 "response_mime_type": "application/json"
             }
-    )
-
-    return (json.loads(response.text))
+        )
+        return json.loads(response.text)
+    except Exception as e:
+        # Fallback: keep the app usable even if the model is unavailable
+        print("generate_roadmap error (falling back to local roadmap):", e)
+        return {
+            "summary": (
+                "AI roadmap generation is temporarily unavailable. "
+                "This is a simple placeholder roadmap so you can still plan manually."
+            ),
+            "phases": [
+                {
+                    "phase_order": 1,
+                    "title": "Define your first concrete steps",
+                    "description": (
+                        "Write down 3–5 specific actions you can take in the next 7 days "
+                        "to move toward this goal."
+                    ),
+                    "completion_criteria": [
+                        "You have listed your initial actions in a place you can revisit."
+                    ],
+                },
+            ],
+        }
 
 
